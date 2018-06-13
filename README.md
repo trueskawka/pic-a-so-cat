@@ -5,13 +5,12 @@ to a server and start drawing, storing your creations in a friendly text format.
 
 ## Features
 
-Current features: none
-
-Planned features:
+Current features: 
 
 0. Server sending HTTP responses
-- you will be able to connect to a simple Python 3.6 server
-- it will send you a response in the form of an HTTP file
+- a simple Flask server returns HTML responses on `localhost:5000`
+
+Planned features:
 
 1. Server with a simple stream 
 - your Python 3.6 server will be streaming a bunch of random words
@@ -41,3 +40,20 @@ Planned features:
 ## Stack
 
 Requirements: Python 3.6 backend, ES6/ES7 frontend, communication using websockets/REST API
+
+## Installation
+
+0. Set up a Python [virtual environment](http://docs.python-guide.org/en/latest/dev/virtualenvs/) and run it
+
+1. Install `requirements.txt` in your environment  
+
+## Running
+
+1. Set the Flask environment variable: `export FLASK_APP=server/server.py`
+
+2. Run: `flask run` and go to `localhost:5000`
+
+## Copyright
+
+1. Favicon [source](https://www.shareicon.net/cat-85580)
+
