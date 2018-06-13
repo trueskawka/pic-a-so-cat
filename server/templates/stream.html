@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+  word, word, woooords!
+{% endblock title %}
+
+{% block content %}
+  <div style="margin-bottom: 20px">
+    <h4 onload="socketsss()"x>I found some names!</h4>
+    <a href="/static/log" download><button>wanna grab them?</button></a>
+    <button onclick="generateNames()">start generating</button>
+  </div>
+  <div id="names">
+  {% for word in log_data %}
+    {% if word != "" %}
+      {{ word }} ->
+    {% endif %}
+  {% endfor %}
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    document.addEventListener('DOMContentLoaded', function() {
+      var socket = io.connect('http://' + document.domain + ':' + location.port + '/generate');
+
+      socket.on('connect', function() {
+        console.log('are you still in?')
+        socket.emit('my event', { data: 'I\'m connected!' });
+      });
+
+      generateNames = function() {
+        console.log('clicked!');
+        socket.emit('generate stream', { data: 'names please!' });
+      }
+
+      socket.on('generated name', function(msg) {
+        console.log(msg.data);
+        var theDiv = document.getElementById("names");
+        theDiv.innerHTML += msg.data + " -> "; 
+      });
+    });
+  </script>
+{% endblock scripts %}

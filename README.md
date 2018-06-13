@@ -10,13 +10,13 @@ Current features:
 0. Server sending HTTP responses
 - a simple Flask server returns HTML responses on `localhost:5000`
 
-Planned features:
-
 1. Server with a simple stream 
-- your Python 3.6 server will be streaming a bunch of random words
-- the words stream will be visible on `localhost:5000`
-- the stream will be stored in a text file as a write-only log
-- you will be able to download the log file
+- the Flask server is streaming a list of proper names
+- if you want to generate words on click, go to `localhost:5000/names`
+- if you want to generate a stream of words, go to `localhost:5000/generate` (1 word per second)
+- the stream is stored in a text file as a write-only log, you can download it at `localhost:5000/static/log`
+
+Planned features:
 
 2. Frontend sending clicks to the server
 - your vanilla JavaScript front-end will be sending clicks from a single user to the backend
@@ -52,6 +52,16 @@ Requirements: Python 3.6 backend, ES6/ES7 frontend, communication using websocke
 1. Set the Flask environment variable: `export FLASK_APP=server/server.py`
 
 2. Run: `flask run` and go to `localhost:5000`
+
+## Reference
+
+1. Flask-SocketIO docs - https://flask-socketio.readthedocs.io/en/latest/
+
+2. Flask-SocketIO tutorial (a bit outdated) - https://blog.miguelgrinberg.com/post/easy-websockets-with-flask-and-gevent
+
+3. On using `gevent.sleep()` - https://stackoverflow.com/questions/30901998/threading-true-with-flask-socketio
+
+4. On using `DOMContentLoaded` - https://stackoverflow.com/questions/799981/document-ready-equivalent-without-jquery
 
 ## Copyright
 
