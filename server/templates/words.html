@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}
+  word, word, woooords!
+{% endblock title %}
+{% block content %}
+  <h4>I found some names</h4>
+  {% for word in log_data %}
+    {% if word != "" %}
+      {{ word }} ->
+    {% endif %}
+  {% endfor %}
+{% endblock content %}
