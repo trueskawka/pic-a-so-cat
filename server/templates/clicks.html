@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}
+  clickity-click!
+{% endblock title %}
+
+{% block content %}
+  <div style="margin-bottom: 20px">
+    <h4 onload="socketsss()"x>Click somewhere in the canvas and I'll know.</h4>
+    <a href="/static/clicks_log" download><button>wanna grab a log of your clicks?</button></a>
+  </div>
+  <div id="clicks">
+    <canvas id="cnvs" width="502" height="502" style="border: 1px solid black;"></canvas>
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    'use strict';
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const socket = io.connect('http://' + document.domain + ':' + location.port + '/clicks');
+      const canvas = document.getElementById('cnvs');
+      const ctx    = canvas.getContext('2d');
+      ctx.fillStyle = 'rgb(200, 0, 0)'; 
+      
+      let drawDots = function() {
+        let data = {{ log_data|safe }};
+        data.forEach(function(point) {
+          point = point.split(':').map(x => +x)
+          ctx.fillRect(point[0], point[1], 5, 5);
+        });
+      }
+
+      socket.on('connect', function() {
+        console.log('are you still in?');
+        socket.emit('clck', { data: 'I\'m clicking!' });
+        drawDots();
+      });
+
+      canvas.onclick = function(e) {
+        let x = e.x - canvas.offsetLeft;
+        let y = e.y - canvas.offsetTop;
+        // console.log('click! ' + 'x: ' + x + ' y: ' + y);
+        socket.emit('new click!', [x, y]);
+      }
+
+      socket.on('pixel clicked', function(msg) {
+        console.log(msg.data);
+        ctx.fillRect(msg.data[0], msg.data[1], 5, 5);
+      })
+    });
+  </script>
+{% endblock scripts %}

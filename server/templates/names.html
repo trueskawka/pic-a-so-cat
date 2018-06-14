@@ -6,8 +6,8 @@
 
 {% block content %}
   <div style="margin-bottom: 20px">
-    <h4 onload="socketsss()"x>I found some names! I can give you more names.</h4>
-    <a href="/static/log" download><button>wanna grab them?</button></a>
+    <h4>I found some names! I can give you more names.</h4>
+    <a href="/static/names_log" download><button>wanna grab them?</button></a>
     <button id="getname">generate a name</button>
   </div>
   <div id="names">
@@ -31,7 +31,6 @@
 
       socket.on('connect', function() {
         console.log('are you still in?')
-        socket.emit('my event', { data: 'I\'m connected!' });
       });
 
       btn.onclick = function() {

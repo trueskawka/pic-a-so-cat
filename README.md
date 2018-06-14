@@ -14,14 +14,14 @@ Current features:
 - the Flask server is streaming a list of proper names
 - if you want to generate words on click, go to `localhost:5000/names`
 - if you want to generate a stream of words, go to `localhost:5000/generate` (1 word per second)
-- the stream is stored in a text file as a write-only log, you can download it at `localhost:5000/static/log`
-
-Planned features:
+- the stream is stored in a text file as a write-only log, you can download it at `localhost:5000/static/names_log`
 
 2. Frontend sending clicks to the server
-- your vanilla JavaScript front-end will be sending clicks from a single user to the backend
-- the clicks will be stored in a text file as a write-only log
-- the clicks history will be visualized on `localhost:5000`
+- your vanilla JavaScript front-end is sending clicks from a canvas element to the server
+- the clicks are stored in a text file as a write-only log, you can download it at `localhost:5000/static/clicks_log`
+- you can see all the clicks on `localhost:5000/clicks` - and add some more!
+
+Planned features:
 
 3. Connecting the dots
 - your vanilla JavaScript frontend will be able to render lines based on mouse movement

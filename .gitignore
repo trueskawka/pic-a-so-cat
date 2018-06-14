@@ -6,4 +6,7 @@ __pycache__/
 
 jsconfig.json
 flaskr/
+
 server/static/log
+server/static/names_log
+server/static/clicks_log

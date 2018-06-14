@@ -8,16 +8,8 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 app.config['SECRET_KEY'] = 'kitten'
-app.config['LOG_PATH']   = os.path.join(app.root_path, 'static/log')
-
-# get a list of names from the file
-def seed_names(file_path):
-    text_file = open(file_path, 'r')
-    words = text_file.read().split('\n')
-    text_file.close()
-    return words
-
-words = seed_names('/usr/share/dict/propernames')
+app.config['NAMES_LOG']  = os.path.join(app.root_path, 'static/names_log')
+app.config['CLICKS_LOG'] = os.path.join(app.root_path, 'static/clicks_log')
 
 @app.route('/')
 def hellooo():
@@ -32,25 +24,28 @@ def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+# test socket connection
+@socketio.on('connect')
+def connected():
+    print('connection established')
+
 # create a log file
 def create_log(log_file_path):
     log_file = open(log_file_path, 'w')
     log_file.close()
 
-# append to file
-def add_name(log_file_path):
+# append an event to a log
+def append_log(log_file_path, data):
     try:
         log_file = open(log_file_path, 'a+')
     except IOError:
         create_log(log_file_path)
         log_file = open(log_file_path, 'a+')
-    name = random.choice(words)
-    log_file.write(name + '\n')
+    log_file.write(data + '\n')
     log_file.close()
-    return name
 
 # get current log state
-def get_names(log_file_path):
+def get_log(log_file_path):
     try:
         log_file = open(log_file_path, 'r')
     except IOError:
@@ -60,38 +55,62 @@ def get_names(log_file_path):
     log_file.close()
     return log_data
 
+"""
+Tracking clicks
+"""
+@app.route('/clicks')
+def show_clicks():
+    return render_template('clicks.html', log_data = get_log(app.config['CLICKS_LOG']))
+
+@socketio.on('clck', namespace='/clicks')
+def cnt(message):
+    print('clicking')
+
+@socketio.on('new click!', namespace='/clicks')
+def add_click(data):
+    append_log(app.config['CLICKS_LOG'], str(data[0]) + ':' + str(data[1]))
+    emit('pixel clicked', { 'data' : data }, broadcast = True)
+
+"""
+Generating names.
+"""
+# get a list of names from the file
+def seed_names(file_path):
+    text_file = open(file_path, 'r')
+    words = text_file.read().split('\n')
+    text_file.close()
+    return words
+
+words = seed_names('/usr/share/dict/propernames')
+
 # generate a random name from the list
 def generate_name(event_name, log_file_path):
-    name = add_name(log_file_path)
-    print(name)
-    emit(event_name, { 'data': name }, broadcast = True)
-
-# test socket connection
-@socketio.on('connect')
-def connected():
-    print('connection established')
+    data = random.choice(words)
+    append_log(log_file_path, data)
+    print(data)
+    emit(event_name, { 'data': data }, broadcast = True)
 
 # on-click name generation route
 @app.route('/names')
 def show_words():   
-    return render_template('words.html', log_data = get_names(app.config['LOG_PATH']))
+    return render_template('names.html', log_data = get_log(app.config['NAMES_LOG']))
 
 # the tutorial suggests namespace is optional, but it doesn't seem to be
 @socketio.on('getname', namespace='/names')
 def give_name(message):
     print('I\'ll get you a name!')
-    generate_name('name', app.config['LOG_PATH'])
+    generate_name('name', app.config['NAMES_LOG'])
 
 # name stream route
 @app.route('/generate')
 def show_stream():
-    return render_template('stream.html', log_data = get_names(app.config['LOG_PATH']))
+    return render_template('stream.html', log_data = get_log(app.config['NAMES_LOG']))
 
 @socketio.on('generate stream', namespace='/generate')
 def generate_words(message):
     print('I\'ll get you some names!')
     while True:
-        generate_name('generated name', app.config['LOG_PATH'])
+        generate_name('generated name', app.config['NAMES_LOG'])
         # to allow for updating on the frontend
         gevent.sleep(1)
 
