@@ -53,6 +53,8 @@ Requirements: Python 3.6 backend, ES6/ES7 frontend, communication using websocke
 
 2. Run: `flask run` and go to `localhost:5000`
 
+3. If you want live reloading, start the server with `python -m flask run` instead
+
 ## Reference
 
 1. Flask-SocketIO docs - https://flask-socketio.readthedocs.io/en/latest/

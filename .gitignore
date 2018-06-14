@@ -4,4 +4,6 @@
 __pycache__/
 *.py[cod]
 
-/server/static/log
+jsconfig.json
+flaskr/
+server/static/log
