@@ -8,6 +8,7 @@
   <div style="margin-bottom: 20px">
     <h4 onload="socketsss()"x>Move your mouse around to draw lines.</h4>
     <a href="/static/clicks_log" download><button>wanna grab a log of your lines?</button></a>
+    <button id="clear">clear drawing</button>
   </div>
   <div id="clicks">
     <canvas id="cnvs" width="502" height="502" style="border: 1px solid black;"></canvas>
@@ -20,10 +21,16 @@
     'use strict';
     
     document.addEventListener('DOMContentLoaded', function() {
-      const socket = io.connect('http://' + document.domain + ':' + location.port + '/draw');
-      const canvas = document.getElementById('cnvs');
-      const ctx    = canvas.getContext('2d');
+      const socket  = io.connect('http://' + document.domain + ':' + location.port + '/draw');
+      const canvas  = document.getElementById('cnvs');
+      const ctx     = canvas.getContext('2d');
+      const clear   = document.getElementById('clear');
       ctx.fillStyle = 'rgb(200, 0, 0)'; 
+
+      clear.addEventListener('click', function(e) {
+        console.log('clear!');
+        socket.emit('clear drawing', { data: 'Clear clicked! '});
+      });
       
       let drawDots = function() {
         let data = {{ log_data|safe }};
@@ -36,7 +43,7 @@
 
       socket.on('connect', function() {
         console.log('are you still in?');
-        socket.emit('drw', { data: 'I\'m clicking!' });
+        socket.emit('drw', { data: 'I\'m drawing!' });
         drawDots();
       });
 
@@ -53,14 +60,14 @@
 
         // console.log('draw!' + 'x: ' + x + ' y: ' + y);
         socket.emit('draw', [x, y]);
-      })
+      });
 
       socket.on('drawing', function(msg) {
         console.log(msg.data);
         // ctx.fillRect(msg.data[0], msg.data[1], 5, 5);
         ctx.lineTo(msg.data[0], msg.data[1], 2, 2);
         ctx.stroke();
-      })
+      });
     });
   </script>
 {% endblock scripts %}

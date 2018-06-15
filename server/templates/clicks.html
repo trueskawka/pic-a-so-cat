@@ -8,6 +8,7 @@
   <div style="margin-bottom: 20px">
     <h4 onload="socketsss()"x>Click somewhere in the canvas and I'll know.</h4>
     <a href="/static/clicks_log" download><button>wanna grab a log of your clicks?</button></a>
+    <button id="clear">clear drawing log</button>
   </div>
   <div id="clicks">
     <canvas id="cnvs" width="502" height="502" style="border: 1px solid black;"></canvas>
@@ -23,7 +24,13 @@
       const socket = io.connect('http://' + document.domain + ':' + location.port + '/clicks');
       const canvas = document.getElementById('cnvs');
       const ctx    = canvas.getContext('2d');
+      const clear   = document.getElementById('clear');
       ctx.fillStyle = 'rgb(200, 0, 0)'; 
+
+      clear.addEventListener('click', function(e) {
+        console.log('clear!');
+        socket.emit('clear clicks', { data: 'Clear clicked! '});
+      });
       
       let drawDots = function() {
         let data = {{ log_data|safe }};

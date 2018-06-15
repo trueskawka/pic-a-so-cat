@@ -1,7 +1,7 @@
 import os
 import random
 import gevent
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, redirect
 from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
@@ -56,6 +56,14 @@ def get_log(log_file_path):
     log_file.close()
     return log_data
 
+# remove a log
+def remove_log(log_file_path, path):
+    if os.path.isfile(log_file_path):
+        os.remove(log_file_path)
+    else:    ## Show an error ##
+        print("Error: %s file not found" % log_file_path)
+    return redirect(path)
+
 """
 Tracking clicks
 """
@@ -72,6 +80,11 @@ def add_click(data):
     append_log(app.config['CLICKS_LOG'], str(data[0]) + ':' + str(data[1]))
     emit('pixel clicked', { 'data' : data }, broadcast = True)
 
+@socketio.on('clear clicks', namespace='/clicks')
+def clear_clicks(msg):
+    print('remove clicks log')
+    remove_log(app.config['CLICKS_LOG'], '/clicks')
+
 """
 Tracking mouse movements
 """
@@ -87,6 +100,11 @@ def drw_start(message):
 def add_pixel(data):
     append_log(app.config['DRAWING_LOG'], str(data[0]) + ':' + str(data[1]))
     emit('drawing', { 'data' : data }, broadcast = True)
+
+@socketio.on('clear drawing', namespace='/draw')
+def clear_drawing(msg):
+    print('remove drawing log')
+    remove_log(app.config['DRAWING_LOG'], '/draw')
 
 """
 Generating names.
