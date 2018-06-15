@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}
+  draw some lines!
+{% endblock title %}
+
+{% block content %}
+  <div style="margin-bottom: 20px">
+    <h4 onload="socketsss()"x>Move your mouse around to draw lines.</h4>
+    <a href="/static/clicks_log" download><button>wanna grab a log of your lines?</button></a>
+  </div>
+  <div id="clicks">
+    <canvas id="cnvs" width="502" height="502" style="border: 1px solid black;"></canvas>
+  </div>
+{% endblock content %}
+
+{% block scripts %}
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    'use strict';
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const socket = io.connect('http://' + document.domain + ':' + location.port + '/draw');
+      const canvas = document.getElementById('cnvs');
+      const ctx    = canvas.getContext('2d');
+      ctx.fillStyle = 'rgb(200, 0, 0)'; 
+      
+      let drawDots = function() {
+        let data = {{ log_data|safe }};
+        data.forEach(function(point) {
+          point = point.split(':').map(x => +x)
+          ctx.lineTo(point[0], point[1], 2, 2);
+          ctx.stroke();
+        });
+      }
+
+      socket.on('connect', function() {
+        console.log('are you still in?');
+        socket.emit('drw', { data: 'I\'m clicking!' });
+        drawDots();
+      });
+
+      //canvas.onclick = function(e) {
+        //let x = e.x - canvas.offsetLeft;
+        //let y = e.y - canvas.offsetTop;
+        // console.log('click! ' + 'x: ' + x + ' y: ' + y);
+        //socket.emit('new click!', [x, y]);
+      //} 
+
+      canvas.addEventListener('mousemove', function(e) {
+        let x = e.x - canvas.offsetLeft;
+        let y = e.y - canvas.offsetTop;
+
+        // console.log('draw!' + 'x: ' + x + ' y: ' + y);
+        socket.emit('draw', [x, y]);
+      })
+
+      socket.on('drawing', function(msg) {
+        console.log(msg.data);
+        // ctx.fillRect(msg.data[0], msg.data[1], 5, 5);
+        ctx.lineTo(msg.data[0], msg.data[1], 2, 2);
+        ctx.stroke();
+      })
+    });
+  </script>
+{% endblock scripts %}

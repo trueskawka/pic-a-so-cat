@@ -10,3 +10,4 @@ flaskr/
 server/static/log
 server/static/names_log
 server/static/clicks_log
+server/static/drawing_log

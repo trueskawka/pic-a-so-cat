@@ -7,9 +7,10 @@ from flask_socketio import SocketIO, emit
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-app.config['SECRET_KEY'] = 'kitten'
-app.config['NAMES_LOG']  = os.path.join(app.root_path, 'static/names_log')
-app.config['CLICKS_LOG'] = os.path.join(app.root_path, 'static/clicks_log')
+app.config['SECRET_KEY']  = 'kitten'
+app.config['NAMES_LOG']   = os.path.join(app.root_path, 'static/names_log')
+app.config['CLICKS_LOG']  = os.path.join(app.root_path, 'static/clicks_log')
+app.config['DRAWING_LOG'] = os.path.join(app.root_path, 'static/drawing_log')
 
 @app.route('/')
 def hellooo():
@@ -70,6 +71,22 @@ def cnt(message):
 def add_click(data):
     append_log(app.config['CLICKS_LOG'], str(data[0]) + ':' + str(data[1]))
     emit('pixel clicked', { 'data' : data }, broadcast = True)
+
+"""
+Tracking mouse movements
+"""
+@app.route('/draw')
+def show_drawing():
+    return render_template('draw.html', log_data = get_log(app.config['DRAWING_LOG']))
+
+@socketio.on('drw', namespace='/draw')
+def drw_start(message):
+    print('drawing')
+
+@socketio.on('draw', namespace='/draw')
+def add_pixel(data):
+    append_log(app.config['DRAWING_LOG'], str(data[0]) + ':' + str(data[1]))
+    emit('drawing', { 'data' : data }, broadcast = True)
 
 """
 Generating names.

@@ -17,16 +17,16 @@ Current features:
 - the stream is stored in a text file as a write-only log, you can download it at `localhost:5000/static/names_log`
 
 2. Frontend sending clicks to the server
-- your vanilla JavaScript front-end is sending clicks from a canvas element to the server
+- your vanilla JavaScript frontend is sending clicks from a canvas element to the server
 - the clicks are stored in a text file as a write-only log, you can download it at `localhost:5000/static/clicks_log`
 - you can see all the clicks on `localhost:5000/clicks` - and add some more!
 
-Planned features:
-
 3. Connecting the dots
-- your vanilla JavaScript frontend will be able to render lines based on mouse movement
-- the lines will be stored in a text file as a write-only log
-- the drawings will be visible on `localhost:5000`
+- your vanilla JavaScript frontend is drawing lines based on your mouse movement
+- the lines are stored in a text file as a write-only log, you can download it at `localhost:5000/static/drawing_log`
+- you can see the drawing on `localhost:5000/draw` - and add some more lines!
+
+Planned features:
 
 4. Drawing party
 - anyone can connect to the server and start drawing, with a randomly assigned color
