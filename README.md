@@ -26,11 +26,11 @@ Current features:
 - the lines are stored in a text file as a write-only log, you can download it at `localhost:5000/static/drawing_log`
 - you can see the drawing on `localhost:5000/draw` - and add some more lines!
 
-Planned features:
-
 4. Drawing party
-- anyone can connect to the server and start drawing, with a randomly assigned color
-- all the drawings will be stored in the write-only log
+- anyone can connect to the server and start drawing on a shared canvas, with a randomly assigned color
+- all the drawings are stored in the write-only log
+
+Planned features:
 
 5. Customizations
 - instead of preassigned colors, you will be able to draw with any color you pick

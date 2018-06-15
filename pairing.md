@@ -7,21 +7,25 @@
 
 2. Canvas offset is off when scrolling
 
-3. After deleting the log file, the views need to be reloaded
-    
-    docs: http://flask.pocoo.org/docs/0.12/quickstart/#redirects-and-errors
+<strike>3. After deleting the log file, the views need to be reloaded</strike>- yay!
 
 ## Adding new features
 
-1. Add a second player
+1. Add a second player - yay!
     
-    Currently the drawing events are broadcastet and there is just one connection to the backend.
+    Currently the drawing events are broadcasted and there is just one connection to the backend.
 
     To-do:
-    - add another socket connection to separate the players
-    - add a random color for each player
-    - add info on the color to the log (player id? color?)
-    - adjust broadcast to include the color info
+
+    <strike>- add another socket connection to separate the players</strike> 
+
+    <strike>- create a random number for the id - just assign a random color</strike>
+
+    <strike>- add info on the color to the log</strike>
+
+    <strike>- adjust broadcast to include the color info</strike>
+    
+    <strike>- adjust the frontend to draw each segment with different color</strike>
 
 2. Add new drawing tools 
     

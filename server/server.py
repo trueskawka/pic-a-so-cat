@@ -1,16 +1,19 @@
 import os
 import random
 import gevent
-from flask import Flask, render_template, send_from_directory, redirect
+from flask import Flask, render_template, send_from_directory, redirect, session
 from flask_socketio import SocketIO, emit
+from flask_session import Session
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SECRET_KEY']   = 'kitten'
+app.config['NAMES_LOG']    = os.path.join(app.root_path, 'static/names_log')
+app.config['CLICKS_LOG']   = os.path.join(app.root_path, 'static/clicks_log')
+app.config['DRAWING_LOG']  = os.path.join(app.root_path, 'static/drawing_log')
 
-app.config['SECRET_KEY']  = 'kitten'
-app.config['NAMES_LOG']   = os.path.join(app.root_path, 'static/names_log')
-app.config['CLICKS_LOG']  = os.path.join(app.root_path, 'static/clicks_log')
-app.config['DRAWING_LOG'] = os.path.join(app.root_path, 'static/drawing_log')
+Session(app)
+socketio = SocketIO(app, manage_session=False)
 
 @app.route('/')
 def hellooo():
@@ -92,14 +95,22 @@ Tracking mouse movements
 def show_drawing():
     return render_template('draw.html', log_data = get_log(app.config['DRAWING_LOG']))
 
+
+# @app.route('/set/')
+# def set():
+#     session['key'] = 'value'
+#     return 'ok'
+
 @socketio.on('drw', namespace='/draw')
 def drw_start(message):
-    print('drawing')
+    session['color'] = message
+    print('drawing color: ', session['color'])
 
 @socketio.on('draw', namespace='/draw')
 def add_pixel(data):
-    append_log(app.config['DRAWING_LOG'], str(data[0]) + ':' + str(data[1]))
-    emit('drawing', { 'data' : data }, broadcast = True)
+    append_log(app.config['DRAWING_LOG'], 
+               str(data[0]) + ':' + str(data[1]) + ':' + session['color'])
+    emit('drawing', { 'data' : data, 'color': session['color'] }, broadcast = True)
 
 @socketio.on('clear drawing', namespace='/draw')
 def clear_drawing(msg):

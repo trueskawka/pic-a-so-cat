@@ -30,12 +30,13 @@
       clear.addEventListener('click', function(e) {
         console.log('clear!');
         socket.emit('clear clicks', { data: 'Clear clicked! '});
+        window.location.reload();
       });
       
       let drawDots = function() {
         let data = {{ log_data|safe }};
         data.forEach(function(point) {
-          point = point.split(':').map(x => +x)
+          point = point.split(':').map(x => +x);
           ctx.fillRect(point[0], point[1], 5, 5);
         });
       }

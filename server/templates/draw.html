@@ -25,48 +25,52 @@
       const canvas  = document.getElementById('cnvs');
       const ctx     = canvas.getContext('2d');
       const clear   = document.getElementById('clear');
-      ctx.fillStyle = 'rgb(200, 0, 0)'; 
+      const colors = ['tomato', 'purple', 'blue', 'green', 'yellow', 'orange'];
+      let xs = 0, ys = 0;
 
       clear.addEventListener('click', function(e) {
         console.log('clear!');
         socket.emit('clear drawing', { data: 'Clear clicked! '});
+        window.location.reload();
       });
+
+      const drawLines = function(x, y, color) {
+        ctx.beginPath();
+        ctx.moveTo(xs, ys);
+        ctx.strokeStyle = color;
+        ctx.lineTo(x, y, 2, 2);
+        ctx.stroke();
+        xs = x, ys = y;
+      }
       
-      let drawDots = function() {
-        let data = {{ log_data|safe }};
+      const drawLog = function() {
+        const data = {{ log_data|safe }};
         data.forEach(function(point) {
-          point = point.split(':').map(x => +x)
-          ctx.lineTo(point[0], point[1], 2, 2);
-          ctx.stroke();
+          const [x, y, color] = point.split(':');
+          drawLines(+x, +y, color);
         });
+      }
+
+      const randomColor = function(max) {
+        const i = Math.floor(Math.random() * Math.floor(max));
+        return colors[i];
       }
 
       socket.on('connect', function() {
         console.log('are you still in?');
-        socket.emit('drw', { data: 'I\'m drawing!' });
-        drawDots();
+        const myColor = randomColor(6);
+        socket.emit('drw', myColor);
+        drawLog();
       });
 
-      //canvas.onclick = function(e) {
-        //let x = e.x - canvas.offsetLeft;
-        //let y = e.y - canvas.offsetTop;
-        // console.log('click! ' + 'x: ' + x + ' y: ' + y);
-        //socket.emit('new click!', [x, y]);
-      //} 
-
       canvas.addEventListener('mousemove', function(e) {
-        let x = e.x - canvas.offsetLeft;
-        let y = e.y - canvas.offsetTop;
-
-        // console.log('draw!' + 'x: ' + x + ' y: ' + y);
+        const x = e.x - canvas.offsetLeft;
+        const y = e.y - canvas.offsetTop;
         socket.emit('draw', [x, y]);
       });
 
       socket.on('drawing', function(msg) {
-        console.log(msg.data);
-        // ctx.fillRect(msg.data[0], msg.data[1], 5, 5);
-        ctx.lineTo(msg.data[0], msg.data[1], 2, 2);
-        ctx.stroke();
+        drawLines(msg.data[0], msg.data[1], msg.color);
       });
     });
   </script>
